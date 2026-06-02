@@ -10,7 +10,7 @@ It is the powerful combination of:
 - 🧐 **Reasoning** — the logic
 - 🚀 **Actions** — the execution
 
-This repository is the beginning of my journey into **building AI agents with Hugging Face**.
+This repository is about **building AI agents with Hugging Face**.
 
 The first goal is simple:
 
@@ -76,19 +76,21 @@ http://127.0.0.1:11434
 Install Hugging Face's `smolagents` library with LiteLLM support:
 
 ```bash
-pip install 'smolagents[litellm]'
+pip install smolagents[litellm]
 ```
 
 ---
 
 ## Step 5: Connect Python to the Local Model
 
-Create a Python file, for example:
+Create a Python file,to send prompt to Ollama:
 
 ```bash
 main.py
 ```
 Look at the code in this directory.
+Notice we use LiteLLMModel class in the code. It creates a connection between
+our Python program and the Ollama server running locally at http://127.0.0.1:11434. 
 
 Run the file:
 
@@ -103,6 +105,8 @@ Model connected successfully!
 ```
 
 ---
+
+### This object does not load the model into Python; it simply acts as a client that sends prompts to Ollama and receives the model's responses.
 
 ## Optional: Chat With the Model in Terminal
 
