@@ -7,4 +7,4 @@ model = LiteLLMModel(
     num_ctx=8192,  # sets the model's context window to 8,192 tokens
 )
 
-print("Model connected successfully")qwen2:7b 
+print("Model connected successfully")
