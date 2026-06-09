@@ -1,145 +1,149 @@
 # Building Agents with Hugging Face
 
+Personal learning repo for the [Hugging Face Agents Course](https://huggingface.co/learn/agents-course). The goal is to go from understanding agents and LLMs to running a local model in Python — the first building block before adding tools, memory, and workflows.
 
-An AI Agent is much more than just a chatbot.
+An AI agent is more than a chatbot. It combines:
 
-It is the powerful combination of:
+- **LLM** — the brain
+- **Tools** — the hands
+- **Reasoning** — the logic
+- **Actions** — the execution
 
-- 🧠 **LLM** — the brain
-- 🛠️ **Tools** — the hands
-- 🧐 **Reasoning** — the logic
-- 🚀 **Actions** — the execution
-
-This repository is about **building AI agents with Hugging Face**.
-
-The first goal is simple:
-
-> Run a local LLM on my own machine and connect it to Python using Hugging Face's `smolagents`.
+This project starts with the LLM layer: connect Python to a local model using [Ollama](https://ollama.com) and Hugging Face's [`smolagents`](https://github.com/huggingface/smolagents).
 
 ---
 
-## What We Are Building
+## Quick Start
 
-In this first step, we will run a smart local model using:
+### Prerequisites
 
-- **Ollama** — to run LLMs locally
-- **Qwen2 7B** — as the local model
-- **smolagents** — Hugging Face's lightweight agent framework
-- **LiteLLM** — to connect the local model to Python
+- [Ollama](https://ollama.com/download) installed
+- Python 3.10+
 
-`smolagents` is a simple library from Hugging Face for building AI agents with very little code.
-
-You can think of it as a simpler alternative to frameworks like LangChain.
-
----
-
-## Step 1: Install Ollama
-
-Download and install Ollama:
-
-https://ollama.com/download
-
-Ollama allows you to run language models locally on your machine.
-
----
-
-## Step 2: Pull a Local Model
-
-Open your terminal and pull a lightweight model.
-
-In this example, I am using `qwen2:7b`:
+### 1. Install dependencies
 
 ```bash
-ollama pull qwen2:7b
+pip install -r requirements.txt
 ```
 
----
-
-## Step 3: Start the Ollama Server
-
-Run Ollama in the background:
-
-```bash
-ollama serve
-```
-
-By default, Ollama runs on:
-
-```text
-http://127.0.0.1:11434
-```
-
----
-
-## Step 4: Install smolagents
-
-Install Hugging Face's `smolagents` library with LiteLLM support:
+Or install directly:
 
 ```bash
 pip install smolagents[litellm]
 ```
 
----
-
-## Step 5: Connect Python to the Local Model
-
-Create a Python file,to send prompt to Ollama:
+### 2. Pull a local model
 
 ```bash
-main.py
+ollama pull qwen2:7b
 ```
-Look at the code in this directory.
-Notice we use LiteLLMModel class in the code. It creates a connection between
-our Python program and the Ollama server running locally at http://127.0.0.1:11434. 
 
-Run the file:
+### 3. Start the Ollama server
+
+```bash
+ollama serve
+```
+
+Ollama runs at `http://127.0.0.1:11434` by default.
+
+### 4. Connect Python to the model
 
 ```bash
 python main.py
 ```
 
-If everything is working correctly, you should see:
+Expected output:
 
 ```text
-Model connected successfully!
+Model connected successfully
 ```
 
 ---
 
-### This object does not load the model into Python; it simply acts as a client that sends prompts to Ollama and receives the model's responses.
+## How It Works
 
-## Optional: Chat With the Model in Terminal
+`main.py` creates a client that talks to Ollama — it does **not** load the model into Python. It sends prompts to the local Ollama API and receives responses.
 
-You can also run the model directly from the terminal:
+```python
+from smolagents import LiteLLMModel
+
+model = LiteLLMModel(
+    model_id="ollama_chat/qwen2:7b",
+    api_base="http://127.0.0.1:11434",
+    num_ctx=8192,
+)
+```
+
+| Parameter | Purpose |
+|-----------|---------|
+| `model_id` | Model served by Ollama (`ollama_chat/` prefix for chat models) |
+| `api_base` | Local Ollama server URL |
+| `num_ctx` | Context window size in tokens (8192 here) |
+
+**Stack:**
+
+| Tool | Role |
+|------|------|
+| **Ollama** | Runs LLMs locally |
+| **Qwen2 7B** | Local model (`qwen2:7b`) |
+| **smolagents** | Hugging Face agent framework |
+| **LiteLLM** | Connects Python to the Ollama API |
+
+### Optional: chat in the terminal
 
 ```bash
 ollama run qwen2:7b
 ```
 
-Then you can start chatting with the model locally.
-
 ---
 
 ## Project Structure
 
-A simple starting structure can look like this:
-
 ```text
-building-agents-with-huggingface/
-│
-├── main.py
+huggingface-agent-building/
+├── main.py              # Connect Python to Ollama via smolagents
+├── requirements.txt     # Python dependencies
 ├── README.md
-└── requirements.txt
+└── doc/                 # Course notes and summaries
+    ├── 1-What is agents.md
+    ├── 2-LLMs.md
+    └── 3-Messages and special tokens.md
 ```
 
+---
 
+## Learning Notes
+
+Course summaries live in [`doc/`](doc/). Each file links back to the official Hugging Face lesson.
+
+| # | Topic | Notes |
+|---|-------|-------|
+| 1 | What are agents? | [doc/1-What is agents.md](doc/1-What%20is%20agents.md) |
+| 2 | What are LLMs? | [doc/2-LLMs.md](doc/2-LLMs.md) · [Official lesson](https://huggingface.co/learn/agents-course/unit1/what-are-llms) |
+| 3 | Messages & special tokens | [doc/3-Messages and special tokens.md](doc/3-Messages%20and%20special%20tokens.md) · [Official lesson](https://huggingface.co/learn/agents-course/unit1/messages-and-special-tokens) |
+
+### Progress so far
+
+**Unit 1 — Foundations**
+
+- LLMs are decoder-based transformers that predict the next token autoregressively until an EOS token
+- Chat UIs show messages, but the model receives one concatenated prompt each time — formatted by **chat templates**
+- Messages use roles: `system`, `user`, `assistant`
+- For agents, the **system message** defines behavior, available tools, and action formatting
+
+**This repo (hands-on)**
+
+- Local LLM running via Ollama
+- Python connection established through `LiteLLMModel` in `main.py`
+
+**Next in the course**
+
+- Tools — extending the agent beyond text generation
+
+---
 
 ## Why This Matters
 
-This is the first building block of an AI agent.
+Before adding tools, memory, search, or APIs, you need a working connection between your code and an LLM. This repo covers that first step.
 
-Before adding tools, memory, search, APIs, or workflows, we first need to connect our Python code to an LLM.
-
-After this step, we can start giving the agent real tools.
-
-
+Official course: [Hugging Face Agents Course](https://huggingface.co/learn/agents-course)
